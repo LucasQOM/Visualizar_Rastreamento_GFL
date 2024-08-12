@@ -16,11 +16,13 @@ Instale as dependências com NPM
 
 ```http
   POST /api/track
+  POST /api/trackAzul
 ```
 
 | Parâmetro | Tipo     | Descrição                                               |
 | :-------- | :------- | :------------------------------------------------------ |
 | `cpf`     | `string` | **Obrigatório**. O CPF serve como "login" na plataforma |
+|`trackCode`|`string`| **Obrigatório**. Código necessário para rastrear a entrega na plataforma |
 
 #### Utilizando via cron
 
