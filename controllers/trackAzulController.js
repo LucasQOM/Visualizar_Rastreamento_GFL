@@ -10,25 +10,28 @@ exports.track = async function track(req, res) {
   });
   const page = await browser.newPage();
 
-  let cpf = req.body.cpf;
+  let trackCode = req.body.trackCode;
 
   try {
-    await page.goto(`https://cademinhaentrega.com.br/gfl/tracking/D/${cpf}`);
-    await page.waitForSelector(".shipment-wrapper");
+    await page.goto(`https://www.azulcargoexpress.com.br/Rastreio/Rastreio`);
+    await page.waitForSelector("#chaveParaRastreio");
+    await page.type("#chaveParaRastreio", trackCode);
+    await page.click("#btnAddRastreio");
+    await page.waitForSelector("#btnConsultarRastreio");
+    await page.click("#btnConsultarRastreio");
+    await page.waitForSelector(".botaoDetalhes");
     await page.evaluate(() => {
-      document.getElementsByClassName("shipment-item")[0].click();
+      document.querySelector(".botaoDetalhes").click();
     });
-    await page.waitForSelector(".tracking-details-title");
-    await page.waitForTimeout(250); //waiting to load the content in headless mode
-    await page.evaluate(() => {
-      document.getElementsByClassName("tracking-details-title")[0].click();
-    });
-    await page.waitForSelector(".item-label");
-    await page.waitForTimeout(250); //waiting to load the content in headless mode
+    await page.waitForSelector(".cardDetalhado.sucesso");
     let lastMessage = await page.evaluate(() => {
-      return document.getElementsByClassName("item-label")[0].textContent;
+      return document.querySelector(".cardDetalhado.sucesso").textContent;
     });
+
+    lastMessage = lastMessage.replace(/\s+/g, " ").trim();
+
     browser.close();
+
     if (req.body.cron) {
       let date = new Date();
       console.log(lastMessage, date);
@@ -37,7 +40,6 @@ exports.track = async function track(req, res) {
     }
   } catch (error) {
     console.log(error);
-    browser.close();
     if (process.env.APP_ENV === "development") {
       return error;
     } else {
