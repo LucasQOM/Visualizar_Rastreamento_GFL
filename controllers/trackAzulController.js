@@ -5,7 +5,7 @@ const { executablePath } = require("puppeteer");
 exports.track = async function track(req, res) {
   puppeteer.use(StealthPlugin());
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: false,
     executablePath: executablePath(),
   });
   const page = await browser.newPage();
@@ -15,7 +15,9 @@ exports.track = async function track(req, res) {
   try {
     await page.goto(`https://www.azulcargoexpress.com.br/Rastreio/Rastreio`);
     await page.waitForSelector("#chaveParaRastreio");
-    await page.type("#chaveParaRastreio", trackCode);
+    await page.evaluate((trackCode) => {
+      document.querySelector("#chaveParaRastreio").value = trackCode;
+    }, trackCode);
     await page.click("#btnAddRastreio");
     await page.waitForSelector("#btnConsultarRastreio");
     await page.click("#btnConsultarRastreio");
@@ -40,14 +42,7 @@ exports.track = async function track(req, res) {
     }
   } catch (error) {
     console.log(error);
-    if (process.env.APP_ENV === "development") {
-      return error;
-    } else {
-      if (req.body.cron) {
-        console.log("Internal Server Error");
-      } else {
-        res.status(500).json({ Error: "Internal Server Error" });
-      }
-    }
+    browser.close();
+    return error;
   }
 };

@@ -38,14 +38,6 @@ exports.track = async function track(req, res) {
   } catch (error) {
     console.log(error);
     browser.close();
-    if (process.env.APP_ENV === "development") {
-      return error;
-    } else {
-      if (req.body.cron) {
-        console.log("Internal Server Error");
-      } else {
-        res.status(500).json({ Error: "Internal Server Error" });
-      }
-    }
+    return error;
   }
 };
