@@ -1,4 +1,4 @@
-# Rastreio automático GFL
+# Rastreio automático
 
 API de rastreamento automatizado de encomendas via web scraping (Puppeteer), com notificações pelo Telegram. Suporta as transportadoras **GFL**, **Azul Cargo** e **Braspress**.
 
