@@ -1,11 +1,12 @@
-const puppeteer = require("puppeteer-extra");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-const { executablePath } = require("puppeteer");
+import puppeteerExtra from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import { executablePath } from "puppeteer";
+import { sendMessage } from "../services/telegramService.js";
 
-exports.track = async function track(req, res) {
-  puppeteer.use(StealthPlugin());
-  const browser = await puppeteer.launch({
-    headless: false,
+export async function track(req, res) {
+  puppeteerExtra.use(StealthPlugin());
+  const browser = await puppeteerExtra.launch({
+    headless: "new",
     executablePath: executablePath(),
   });
   const page = await browser.newPage();
@@ -35,14 +36,13 @@ exports.track = async function track(req, res) {
     browser.close();
 
     if (req.body.cron) {
-      let date = new Date();
-      console.log(lastMessage, date);
-    } else {
-      res.status(200).json({ "Last Message": lastMessage });
+      await sendMessage(`🚚 Rastreio ${trackCode}\n\n${lastMessage}`);
     }
+
+    res.status(200).json({ "Last Message": lastMessage });
   } catch (error) {
     console.log(error);
     browser.close();
-    return error;
+    if (res) res.status(500).json({ error: error.message });
   }
-};
+}

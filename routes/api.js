@@ -1,14 +1,12 @@
-let express = require("express");
-let router = express.Router();
-let trackController = require("../controllers/trackController");
-let trackAzulController = require("../controllers/trackAzulController");
+import express from "express";
+import { track } from "../controllers/trackController.js";
+import { track as trackAzul } from "../controllers/trackAzulController.js";
+import { track as trackBraspress } from "../controllers/trackBraspressController.js";
 
-router.post("/track", function (req, res) {
-  trackController.track(req, res);
-});
+const router = express.Router();
 
-router.post("/trackAzul", function (req, res) {
-  trackAzulController.track(req, res);
-});
+router.post("/track", (req, res) => track(req, res));
+router.post("/trackAzul", (req, res) => trackAzul(req, res));
+router.post("/trackBraspress", (req, res) => trackBraspress(req, res));
 
-module.exports = router;
+export default router;
