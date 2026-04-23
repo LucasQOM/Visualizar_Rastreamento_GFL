@@ -73,23 +73,22 @@ export async function track(req, res) {
       { timeout: 30000 },
     );
 
-    const result = await targetFrame.evaluate(() => ({
-      nf: document.querySelector(".dt-nf")?.innerText?.trim() ?? null,
-      previsao:
-        document.querySelector(".dt-previsao-entrega")?.innerText?.trim() ??
-        null,
-      tipo:
-        document.querySelector(".dt-tipo-entrega")?.innerText?.trim() ?? null,
-      status: document.querySelector(".dt-status")?.innerText?.trim() ?? null,
-      lastEventDate:
-        document
-          .querySelector(".details-container .vertical-time-line-date")
-          ?.innerText?.trim() ?? null,
-      lastEvent:
-        document
-          .querySelector(".details-container .vertical-time-line-info")
-          ?.innerText?.trim() ?? null,
-    }));
+    const result = await targetFrame.evaluate(() => {
+      const lastText = (sel) =>
+        Array.from(document.querySelectorAll(sel)).at(-1)?.innerText?.trim() ?? null;
+
+      return {
+        nf: document.querySelector(".dt-nf")?.innerText?.trim() ?? null,
+        previsao:
+          document.querySelector(".dt-previsao-entrega")?.innerText?.trim() ??
+          null,
+        tipo:
+          document.querySelector(".dt-tipo-entrega")?.innerText?.trim() ?? null,
+        status: document.querySelector(".dt-status")?.innerText?.trim() ?? null,
+        lastEventDate: lastText(".details-container .vertical-time-line-date"),
+        lastEvent: lastText(".details-container .vertical-time-line-info"),
+      };
+    });
 
     browser.close();
 
